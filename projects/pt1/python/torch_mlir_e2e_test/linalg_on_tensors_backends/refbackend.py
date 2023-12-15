@@ -155,6 +155,8 @@ LOWERING_PIPELINE = "builtin.module(" + ",".join([
     # Lower to LLVM
     "func.func(tm-tensor-to-loops)",
     "func.func(refback-munge-memref-copy)",
+    # "convert-linalg-to-std",  # test for result, won't success. 
+    "func.func(convert-linalg-to-hwacc)",  # our lowering pass
     "func.func(convert-linalg-to-loops)",
     "func.func(lower-affine)",
     "convert-scf-to-cf",
