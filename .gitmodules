@@ -1,6 +1,7 @@
 [submodule "externals/llvm-project"]
 	path = externals/llvm-project
 	url = git@github.com:jiangqucheng/llvm-project-hwacc.git
+	branch = hwacc
 [submodule "externals/stablehlo"]
 	path = externals/stablehlo
 	url = https://github.com/openxla/stablehlo.git
