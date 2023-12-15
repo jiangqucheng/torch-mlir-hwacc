@@ -35,3 +35,9 @@ llvm-build/
 
 # C++ build artifacts
 compile_commands.json
+
+### My build stuff
+build_log/do_cmake.*.log
+do_cmake.script
+do_cmake
+

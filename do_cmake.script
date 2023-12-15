@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+
+set -x
+
+# Where I build llvm-project
+LLVM_PROJECT_ROOT=/home/qjiang/work/grad_prj/llvm-project-main
+BUILD_DIR=$LLVM_PROJECT_ROOT/build
+CMAKE_INSTALL_PREFIX=$LLVM_PROJECT_ROOT/installation
+CMAKE_LIB_PREFIX=$CMAKE_INSTALL_PREFIX/lib/cmake
+PY_ENV_PATH=`which python3`
+
+set +x 
+
+mkdir -p ./build
+# mkdir -p $BUILD_DIR
+# cd $BUILD_DIR
+
+cmake \
+  -G Ninja \
+  -B build \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+  -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+  -DPython3_FIND_VIRTUALENV=ONLY \
+  -DLLVM_ENABLE_PROJECTS="clang;lld;mlir;" \
+  -DLLVM_EXTERNAL_PROJECTS="torch-mlir" \
+  -DLLVM_EXTERNAL_TORCH_MLIR_SOURCE_DIR="$PWD" \
+  -DMLIR_ENABLE_BINDINGS_PYTHON=ON \
+  -DLLVM_TARGETS_TO_BUILD=host \
+  externals/llvm-project/llvm
+
+
+# cmake \
+#    -G Ninja \
+#    -S $LLVM_PROJECT_ROOT/llvm \
+#    -B $BUILD_DIR \
+#    -DCMAKE_BUILD_TYPE=Release \
+#    -D__XXXXX_TPOUT_XXXXX__CMAKE_C_COMPILER=clang \
+#    -D__XXXXX_TPOUT_XXXXX__CMAKE_CXX_COMPILER=clang++ \
+  #     -DCMAKE_C_COMPILER=clang \
+  #     -DCMAKE_CXX_COMPILER=clang++ \
+#    -DCMAKE_INSTALL_PREFIX=$CMAKE_INSTALL_PREFIX \
+#    -DCLANG_DIR=$CMAKE_LIB_PREFIX/clang \
+#    -DMLIR_DIR=$CMAKE_LIB_PREFIX/mlir \
+#    -DMLIR_ENABLE_BINDINGS_PYTHON=ON \
+#    -DMLIR_INCLUDE_INTEGRATION_TESTS=ON \
+#    -DMLIR_INCLUDE_TESTS=ON \
+#    -DLLVM_BUILD_TESTS=ON \
+#    -DLLVM_BUILD_EXAMPLES=ON \
+#    -DLLVM_CCACHE_BUILD=OFF \
+#    -DLLVM_ENABLE_ASSERTIONS=ON \
+#    -DLLVM_ENABLE_LLD=OFF \
+#    -DLLVM_ENABLE_PROJECTS="clang;lldb;lld;mlir;" \
+#    -DLLVM_EXTERNAL_LIT=$BUILD_DIR/bin/llvm-lit \
+#    -DLLVM_INCLUDE_TESTS=ON \
+#    -DLLVM_INSTALL_UTILS=ON \
+#    -DLLVM_INCLUDE_EXAMPLES=ON \
+#    -DLLVM_TARGETS_TO_BUILD="Native;WebAssembly;" \
+#    -DPython3_FIND_VIRTUALENV=ONLY \
+# ;
+
+   # -DPython_EXECUTABLE="$PY_ENV_PATH" \
+
+
+
+
+# cmake --build . --target check-mlir
+
+# Build everything
+cmake --build build
+
+# Build just torch-mlir (not all of LLVM)
+# cmake --build build --target tools/torch-mlir/all
+
+# Run unit tests.
+# cmake --build build --target check-torch-mlir
+
+# Run Python regression tests.
+# cmake --build build --target check-torch-mlir-python
+
+
+
+
+
+## Too many targets, extremely slow in generating the binaries.
+#    -DLLVM_TARGETS_TO_BUILD="Native;X86;AArch64;ARM;RISCV;WebAssembly;" \
+
+## Cannot use SANITIZER:Address, see link for more detail:
+## https://discourse.llvm.org/t/ld-lld-error-undefined-symbol-while-building-mlir-standalone-template/72490
+#    -DLLVM_USE_SANITIZER="Address;Undefined" \
+

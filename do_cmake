@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+scriptname=do_cmake
+logdir=build_log
+logname=$logdir/$scriptname.`date +"%Y%m%d_%H%M%S"`.log
+mkdir -p $logdir
+echo -e "\n`printf "~%.0s" {1..46}` \n$0: Start @ T=`date +\"%Y-%m-%d %H:%M:%S\"` \n`printf "~%.0s" {1..46}` \n\n" >> $logname;
+bash ./$scriptname.script 2>&1 | tee -a $logname ;
+echo -e "\n\n`printf "~%.0s" {1..46}` \n$0: Done  @ T=`date +\"%Y-%m-%d %H:%M:%S\"` \n`printf "~%.0s" {1..46}` \n" >> $logname;
+echo -e "\nLog saved in: $logname\n";
