@@ -13,10 +13,11 @@ from torch_mlir.runtime import *
 import torch_mlir.dialects.torch
 from torch_mlir.compiler_utils import run_pipeline_with_repro_report
 
-from .abc import LinalgOnTensorsBackend
+from .abc import HwaccLinalgOnTensorsBackend
+from .hwaccBackendLibCall import RefBackend_HwaccCall_Adaptor
 
 __all__ = [
-    "RefBackendLinalgOnTensorsBackend",
+    "RefBackendHwaccLinalgOnTensorsBackend",
 ]
 
 
@@ -155,7 +156,12 @@ LOWERING_PIPELINE = "builtin.module(" + ",".join([
     # Lower to LLVM
     "func.func(tm-tensor-to-loops)",
     "func.func(refback-munge-memref-copy)",
-    # "func.func(convert-linalg-to-hwacc)",  # our lowering pass
+    
+    # Pause here. 
+    # Add our pass to lowering specific operation to Hwacc.
+    "func.func(convert-linalg-to-hwacc)",  
+    
+    # Continue with the original LinalgOnTensors pipeline.    
     "func.func(convert-linalg-to-loops)",
     "func.func(lower-affine)",
     "convert-scf-to-cf",
@@ -177,11 +183,12 @@ LOWERING_PIPELINE = "builtin.module(" + ",".join([
 ]) + ")"
 
 
-class RefBackendLinalgOnTensorsBackend(LinalgOnTensorsBackend):
+class RefBackendHwaccLinalgOnTensorsBackend(HwaccLinalgOnTensorsBackend):
     """Main entry-point for the reference backend."""
 
     def __init__(self):
         super().__init__()
+        self.hwacc_adaptor = RefBackend_HwaccCall_Adaptor()
 
     def compile(self, imported_module: Module):
         """Compiles an imported module, with a flat list of functions.
@@ -199,9 +206,11 @@ class RefBackendLinalgOnTensorsBackend(LinalgOnTensorsBackend):
 
         run_pipeline_with_repro_report(
             imported_module, LOWERING_PIPELINE,
-            "Lowering Linalg-on-Tensors IR to LLVM with RefBackend")
+            "Lowering Linalg-on-Tensors IR to HwGemmAcc and LLVM with RefBackend")
         return imported_module
 
     def load(self, module) -> RefBackendInvoker:
         """Loads a compiled artifact into the runtime."""
-        return RefBackendInvoker(module)
+        jit_handle = RefBackendInvoker(module)
+        self.hwacc_adaptor.register(remote_ee=jit_handle.ee, module=module)
+        return jit_handle
