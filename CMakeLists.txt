@@ -237,3 +237,13 @@ add_subdirectory(projects)
 if(MLIR_ENABLE_BINDINGS_PYTHON)
   add_subdirectory(python)
 endif()
+
+
+#-------------------------------------------------------------------------------
+# neu-esl-sim-hwacc
+#-------------------------------------------------------------------------------
+
+option(ENABLE_HWACC_LIB "Enable neu-esl-sim-hwacc Lib call" ON)
+if (ENABLE_HWACC_LIB)
+  add_subdirectory(externals/neu-esl-sim-hwacc)
+endif()
