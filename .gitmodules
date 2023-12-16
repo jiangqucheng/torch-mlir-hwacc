@@ -5,3 +5,6 @@
 [submodule "externals/stablehlo"]
 	path = externals/stablehlo
 	url = https://github.com/openxla/stablehlo.git
+[submodule "externals/neu-esl-sim-hwacc"]
+	path = externals/neu-esl-sim-hwacc
+	url = git@github.com:jiangqucheng/neu-esl-sim-hwacc.git
