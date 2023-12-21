@@ -2,15 +2,6 @@
 
 set -x
 
-# Where I build llvm-project
-LLVM_PROJECT_ROOT=/home/qjiang/work/grad_prj/llvm-project-main
-BUILD_DIR=$LLVM_PROJECT_ROOT/build
-CMAKE_INSTALL_PREFIX=$LLVM_PROJECT_ROOT/installation
-CMAKE_LIB_PREFIX=$CMAKE_INSTALL_PREFIX/lib/cmake
-PY_ENV_PATH=`which python3`
-
-set +x 
-
 mkdir -p ./build
 # mkdir -p $BUILD_DIR
 # cd $BUILD_DIR
@@ -29,14 +20,22 @@ cmake \
   -DLLVM_TARGETS_TO_BUILD=host \
   externals/llvm-project/llvm
 
+set +x 
+
+
+# Previously, I uses out of tree llvm build. Got issue with version compatibility issue once, never used this config again. 
+# Where I build llvm-project
+# LLVM_PROJECT_ROOT=/home/qjiang/work/grad_prj/llvm-project-main
+# BUILD_DIR=$LLVM_PROJECT_ROOT/build
+# CMAKE_INSTALL_PREFIX=$LLVM_PROJECT_ROOT/installation
+# CMAKE_LIB_PREFIX=$CMAKE_INSTALL_PREFIX/lib/cmake
+# PY_ENV_PATH=`which python3`
 
 # cmake \
 #    -G Ninja \
 #    -S $LLVM_PROJECT_ROOT/llvm \
 #    -B $BUILD_DIR \
 #    -DCMAKE_BUILD_TYPE=Release \
-#    -D__XXXXX_TPOUT_XXXXX__CMAKE_C_COMPILER=clang \
-#    -D__XXXXX_TPOUT_XXXXX__CMAKE_CXX_COMPILER=clang++ \
   #     -DCMAKE_C_COMPILER=clang \
   #     -DCMAKE_CXX_COMPILER=clang++ \
 #    -DCMAKE_INSTALL_PREFIX=$CMAKE_INSTALL_PREFIX \
